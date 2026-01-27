@@ -97,43 +97,46 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private void listenForIncidentUpdates() {
         incidentListener = db.collection("incidents")
                 .addSnapshotListener((snapshots, e) -> {
-                    if (e != null || snapshots == null) return;
+                    if (e != null || snapshots == null || mMap == null) return;
 
                     for (DocumentChange dc : snapshots.getDocumentChanges()) {
 
-                        GeoPoint gp = dc.getDocument().getGeoPoint("location");
-                        String type = dc.getDocument().getString("type");
-                        String desc = dc.getDocument().getString("description");
+                        if (dc.getType() != DocumentChange.Type.ADDED) continue;
 
-                        if (gp == null) continue;
+                        Object locationObj = dc.getDocument().get("location");
+                        if (!(locationObj instanceof GeoPoint)) continue;
+
+                        GeoPoint gp = (GeoPoint) locationObj;
+                        String desc = dc.getDocument().getString("description");
+                        String type = dc.getDocument().getString("type");
+
+                        if (type == null) type = "Other";
+                        if (desc == null) desc = "";
 
                         LatLng pos = new LatLng(gp.getLatitude(), gp.getLongitude());
 
                         float color;
-                        if ("Emergency".equals(type)) {
-                            color = BitmapDescriptorFactory.HUE_RED;
-                        } else if ("Accident".equals(type)) {
-                            color = BitmapDescriptorFactory.HUE_ORANGE;
-                        } else {
-                            color = BitmapDescriptorFactory.HUE_BLUE;
+                        switch (type) {
+                            case "Emergency":
+                                color = BitmapDescriptorFactory.HUE_RED;
+                                break;
+                            case "Accident":
+                                color = BitmapDescriptorFactory.HUE_ORANGE;
+                                break;
+                            default:
+                                color = BitmapDescriptorFactory.HUE_BLUE;
                         }
 
-                        if (dc.getType() == DocumentChange.Type.ADDED) {
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(pos)
-                                    .title(type)
-                                    .snippet(desc)
-                                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
-
-                            Toast.makeText(MapActivity.this, "Incident loaded: " + desc, Toast.LENGTH_SHORT).show();
-                        }
+                        mMap.addMarker(new MarkerOptions()
+                                .position(pos)
+                                .title(type)
+                                .snippet(desc)
+                                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                        );
                     }
                 });
-
-
-
-
     }
+
 
     @Override
     protected void onDestroy() {

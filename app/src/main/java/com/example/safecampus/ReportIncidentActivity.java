@@ -15,6 +15,10 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +41,12 @@ public class ReportIncidentActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.etDescription);
         btnSubmit = findViewById(R.id.btnSubmit);
 
+        FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Spinner options
-        String[] types = {"Emergency", "Accident", "Security" , "Crime", "Damge"};
+        String[] types = {"Emergency", "Accident", "Security" , "Crime", "Damage"};
         spinnerType.setAdapter(
                 new ArrayAdapter<>(this,
                         android.R.layout.simple_spinner_dropdown_item,
@@ -77,11 +82,15 @@ public class ReportIncidentActivity extends AppCompatActivity {
                         return;
                     }
 
+                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
                     Map<String, Object> incident = new HashMap<>();
                     incident.put("type", type);
                     incident.put("description", desc);
-                    incident.put("location", location.getLatitude());
-                    incident.put("loacation", location.getLongitude());
+                    incident.put("location", geoPoint);
+                    incident.put("status", "active"); // auto active
+                    incident.put("timestamp", Timestamp.now()); // auto time
+
 
                     db.collection("incidents")
                             .add(incident)

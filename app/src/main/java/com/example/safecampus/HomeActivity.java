@@ -188,11 +188,15 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     for (DocumentChange dc : snapshots.getDocumentChanges()) {
                         if (dc.getType() != DocumentChange.Type.ADDED) continue;
 
-                        GeoPoint gp =
-                                dc.getDocument().getGeoPoint("location");
+                        Object locationObj = dc.getDocument().get("location");
                         String desc = dc.getDocument().getString("description");
 
-                        if (gp == null) continue;
+                        if (!(locationObj instanceof GeoPoint)) {
+                            // Skip invalid / old data
+                            return;
+                        }
+
+                        GeoPoint gp = (GeoPoint) locationObj;
 
                         LatLng pos = new LatLng(
                                 gp.getLatitude(),
