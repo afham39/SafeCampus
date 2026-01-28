@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +17,15 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import com.google.firebase.firestore.*;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -181,35 +190,47 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void listenForIncidentUpdates() {
         if (db == null) return;
 
+        // We use a SnapshotListener so the map updates automatically
+        // when anyone in the world adds a new incident to Firebase.
         incidentListener = db.collection("incidents")
                 .addSnapshotListener((snapshots, e) -> {
-                    if (e != null || snapshots == null || mMap == null) return;
+                    if (e != null) {
+                        Log.e("FirebaseError", "Listen failed.", e);
+                        return;
+                    }
 
-                    for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                        if (dc.getType() != DocumentChange.Type.ADDED) continue;
+                    if (snapshots != null && mMap != null) {
+                        // STEP A: Clear the map first so we don't have duplicate markers
+                        mMap.clear();
 
-                        Object locationObj = dc.getDocument().get("location");
-                        String desc = dc.getDocument().getString("description");
-
-                        if (!(locationObj instanceof GeoPoint)) {
-                            // Skip invalid / old data
-                            return;
+                        // STEP B: Always redraw the user's marker if we have their location
+                        if (userMarker != null) {
+                            userMarker = mMap.addMarker(new MarkerOptions()
+                                    .position(userMarker.getPosition())
+                                    .title("You are here"));
                         }
 
-                        GeoPoint gp = (GeoPoint) locationObj;
+                        // STEP C: Loop through every document in your Firebase "incidents" collection
+                        for (QueryDocumentSnapshot doc : snapshots) {
 
-                        LatLng pos = new LatLng(
-                                gp.getLatitude(),
-                                gp.getLongitude()
-                        );
+                            // Get the GeoPoint object we stored earlier
+                            GeoPoint gp = doc.getGeoPoint("location");
+                            String title = doc.getString("type"); // e.g., "Accident" or "Theft"
+                            String desc = doc.getString("description");
 
-                        mMap.addMarker( new MarkerOptions()
+                            if (gp != null) {
+                                // Convert Firebase GeoPoint to Google Maps LatLng
+                                LatLng pos = new LatLng(gp.getLatitude(), gp.getLongitude());
+
+                                // Add the marker to the map
+                                mMap.addMarker(new MarkerOptions()
                                         .position(pos)
-                                        .title(desc)
-                                        .icon(BitmapDescriptorFactory
-                                                .defaultMarker(
-                                                        BitmapDescriptorFactory.HUE_RED))
-                        );
+                                        .title(title)
+                                        .snippet(desc)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                                );
+                            }
+                        }
                     }
                 });
     }

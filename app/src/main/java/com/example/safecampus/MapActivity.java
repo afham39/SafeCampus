@@ -35,63 +35,56 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
     }
 
+    // C:/Users/user/AndroidStudioProjects/SafeCampus/app/src/main/java/com/example/safecampus/MapActivity.java
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        mMap = googleMap;// 1. Fetch fixed locations from Firebase (replaces hardcoded LatLngs)
+        fetchStaticLocations();
 
-        LatLng KafetariaUitm = new LatLng(2.22495, 102.45743);
-        LatLng securityPost = new LatLng(2.22239, 102.45335);
-        LatLng clinic = new LatLng(2.22553, 102.45476);
-        LatLng PTAR = new LatLng(2.22753, 102.45576);
-
-
-        // 🔵 Show live incident markers
+        // 2. Show live incident markers
         listenForIncidentUpdates();
 
-        // 📍 User location
+        // 📍 User location setup
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                LatLng pos;
                 if (location != null) {
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 16));
                 }
-
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 17));
             });
         }
-
-
-        mMap.addMarker(new MarkerOptions()
-                .position(KafetariaUitm)
-                .title("Kafetaria Uitm")
-                .icon(BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_BLUE)));
-
-        mMap.addMarker(new MarkerOptions()
-                .position(securityPost)
-                .title("Security Post")
-                .icon(BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_RED)));
-
-        mMap.addMarker(new MarkerOptions()
-                .position(clinic)
-                .title("Campus Clinic"));
-
-        mMap.addMarker(new MarkerOptions()
-                .position(PTAR)
-                .title("Libary"));
-
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(securityPost, 16));
     }
 
+    // New method to fetch your campus locations from Firestore
+    private void fetchStaticLocations() {
+        db.collection("locations") // Assuming your collection is named "locations"
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        GeoPoint gp = doc.getGeoPoint("position");
+                        String name = doc.getString("name");
+                        String type = doc.getString("type"); // e.g., "Facility", "Security"
 
+                        if (gp != null && name != null) {
+                            LatLng pos = new LatLng(gp.getLatitude(), gp.getLongitude());
 
+                            // Customize marker color based on type if needed
+                            float color = BitmapDescriptorFactory.HUE_BLUE;
+                            if ("Security".equalsIgnoreCase(type)) color = BitmapDescriptorFactory.HUE_RED;
+
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(pos)
+                                    .title(name)
+                                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error loading locations", Toast.LENGTH_SHORT).show());
+    }
 
     // 🔥 REAL-TIME INCIDENT MARKERS FROM FIREBASE
     private void listenForIncidentUpdates() {
