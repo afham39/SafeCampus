@@ -5,24 +5,27 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/purple_200"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tvTitle2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SafeCampus Login"
+        android:text="Login"
+        android:textAllCaps="true"
+        android:textColor="@color/yellow_200"
         android:textSize="24sp"
-        android:textStyle="bold"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.247" />
+        app:layout_constraintVertical_bias="0.313" />
 
     <EditText
         android:id="@+id/tfUsername"
@@ -30,6 +33,7 @@
         android:layout_height="wrap_content"
         android:hint="Username"
         android:inputType="text"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -53,13 +57,18 @@
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#FFEB3B"
+        android:backgroundTint="@color/yellow_200"
         android:text="Login"
+        app:iconTint="#FFEB3B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tfUsername"
-        app:layout_constraintVertical_bias="0.742" />
+        app:layout_constraintVertical_bias="0.742"
+        app:rippleColor="#FFD83B"
+        app:strokeColor="#FFEB3B" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/btnGoogleLogin"
@@ -71,5 +80,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.605" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="273dp"
+        android:layout_height="215dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.09"
+        app:srcCompat="@drawable/gambar_safecampus_logo_removebg_preview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

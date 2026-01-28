@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/purple_200"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -14,14 +15,16 @@
         android:id="@+id/etDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Incident description"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:hint="Incident description" />
 
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit Incident"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:background="#FFEB3B"
+        android:backgroundTint="#FFEB3B"
+        android:text="Submit Incident" />
 
 </LinearLayout>
