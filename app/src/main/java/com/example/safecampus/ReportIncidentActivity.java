@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,13 +22,27 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.CameraUpdateFactory;
+
+import android.location.Geocoder;
+import android.location.Address;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReportIncidentActivity extends AppCompatActivity {
+public class ReportIncidentActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     Spinner spinnerType;
     EditText etDescription;
@@ -35,6 +50,10 @@ public class ReportIncidentActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
     FusedLocationProviderClient fusedLocationClient;
+
+    GoogleMap mMap;
+    TextView tvLocation, tvTime;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +76,74 @@ public class ReportIncidentActivity extends AppCompatActivity {
                         types)
         );
 
+        tvLocation = findViewById(R.id.tvLocation);
+        tvTime = findViewById(R.id.tvTime);
+
+// Show current date & time
+        String currentTime = new SimpleDateFormat(
+                "dd MMM yyyy, hh:mm a",
+                Locale.getDefault()
+        ).format(new Date());
+        tvTime.setText("Time: " + currentTime);
+
+// Map
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
+
+
         btnSubmit.setOnClickListener(v -> submitIncident());
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location == null) return;
+
+                    LatLng userLatLng = new LatLng(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    );
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(userLatLng)
+                            .title("You are here"));
+
+                    mMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(userLatLng, 16f)
+                    );
+
+                    // Get readable address
+                    showAddress(location.getLatitude(), location.getLongitude());
+                });
+    }
+
+    private void showAddress(double lat, double lng) {
+        try {
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+
+            if (!addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                tvLocation.setText("Location: " + address.getAddressLine(0));
+            }
+        } catch (Exception e) {
+            tvLocation.setText("Location: Unable to detect");
+        }
+    }
+
+
 
     private void submitIncident() {
 

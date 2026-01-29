@@ -1,64 +1,82 @@
 package com.example.safecampus;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class ReportListActivity extends AppCompatActivity {
 
     private ListView listView;
     private FirebaseFirestore db;
-    private ArrayList<String> reportList;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<Incident> incidentList;
+    private IncidentAdapter adapter;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_list);
 
-        // 1. Initialize Firestore
+        listView = findViewById(R.id.reportListView);
         db = FirebaseFirestore.getInstance();
 
-        // 2. Link the ListView from XML
-        listView = findViewById(R.id.reportListView);
-
-        // 3. Setup the List and Adapter
-        reportList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, reportList);
+        incidentList = new ArrayList<>();
+        adapter = new IncidentAdapter(this, incidentList);
         listView.setAdapter(adapter);
 
-        // 4. Fetch the data
         fetchReportsFromFirebase();
+
+        // CLICK → GOOGLE MAPS
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Incident incident = incidentList.get(position);
+
+            String uri = "geo:" + incident.lat + "," + incident.lng +
+                    "?q=" + incident.lat + "," + incident.lng + "(Incident Location)";
+
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        });
     }
 
     private void fetchReportsFromFirebase() {
         db.collection("incidents")
+                .whereEqualTo("status", "active") // 🔥 FILTER
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    reportList.clear();
+                    incidentList.clear();
+
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
                         String desc = doc.getString("description");
+                        String email = doc.getString("reportedBy");
+                        String status = doc.getString("status");
 
-                        // Combine type and description to show in the list
-                        if (type != null && desc != null) {
-                            reportList.add(type + "\n" + desc);
-                        } else if (type != null) {
-                            reportList.add(type);
+                        double lat = doc.getGeoPoint("location").getLatitude();
+                        double lng = doc.getGeoPoint("location").getLongitude();
+
+                        String time = "";
+                        if (doc.getTimestamp("timestamp") != null) {
+                            time = doc.getTimestamp("timestamp").toDate().toString();
                         }
+
+                        incidentList.add(new Incident(
+                                type, desc, email, time, status, lat, lng
+                        ));
                     }
-                    // Refresh the list to show the new data
+
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to load reports", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load reports", Toast.LENGTH_SHORT).show()
+                );
     }
 }

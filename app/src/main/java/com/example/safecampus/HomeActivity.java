@@ -31,7 +31,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // UI
     private TextView tvWelcome, tvLocation;
-    private Button btnOpenMap, btnReport, btnRefresh;
+    private Button btnOpenMap, btnReport, btnRefresh, btnIncidentList;
 
     // Map & Location
     private GoogleMap mMap;
@@ -56,6 +56,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnOpenMap = findViewById(R.id.btnOpenMap);
         btnReport = findViewById(R.id.btnReport);
         btnRefresh = findViewById(R.id.btnRefresh);
+        btnIncidentList = findViewById(R.id.btnIncidentList);
 
         String username = getIntent().getStringExtra("username");
         tvWelcome.setText("Hello, " + username);
@@ -92,6 +93,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(new Intent(this, ReportIncidentActivity.class)));
 
         btnRefresh.setOnClickListener(v -> requestSingleLocation());
+
+        btnIncidentList.setOnClickListener(v ->
+                startActivity(new Intent(this, ReportListActivity.class)));
+
 
         // ---------- Permission ----------
         if (ContextCompat.checkSelfPermission(this,
