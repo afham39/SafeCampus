@@ -18,6 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+
 
 
 import java.util.HashMap;
@@ -66,6 +70,14 @@ public class ReportIncidentActivity extends AppCompatActivity {
             return;
         }
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userEmail = user.getEmail();
+
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
 
@@ -82,25 +94,29 @@ public class ReportIncidentActivity extends AppCompatActivity {
                         return;
                     }
 
-                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    GeoPoint geoPoint = new GeoPoint(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    );
 
                     Map<String, Object> incident = new HashMap<>();
                     incident.put("type", type);
                     incident.put("description", desc);
                     incident.put("location", geoPoint);
-                    incident.put("status", "active"); // auto active
-                    incident.put("timestamp", Timestamp.now()); // auto time
-
+                    incident.put("status", "active");
+                    incident.put("timestamp", Timestamp.now());
+                    incident.put("reportedBy", userEmail);
 
                     db.collection("incidents")
                             .add(incident)
                             .addOnSuccessListener(doc -> {
                                 Toast.makeText(this, "Incident reported", Toast.LENGTH_SHORT).show();
-                                finish(); // go back
+                                finish();
                             })
                             .addOnFailureListener(e ->
                                     Toast.makeText(this, "Failed to report incident", Toast.LENGTH_SHORT).show()
                             );
                 });
     }
+
 }
