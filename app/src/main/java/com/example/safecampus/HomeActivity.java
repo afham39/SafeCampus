@@ -147,24 +147,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateUserLocation(Location location) {
-        LatLng user = new LatLng(
-                location.getLatitude(),
-                location.getLongitude()
-        );
+        LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (userMarker == null) {
-            userMarker = mMap.addMarker(
-                    new MarkerOptions()
-                            .position(user)
-                            .title("You are here")
-            );
+        if (userMarker == null) {userMarker = mMap.addMarker(new MarkerOptions()
+                .position(user)
+                .title("Anda di sini")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         } else {
             userMarker.setPosition(user);
         }
-
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(user, 17));
-        tvLocation.setText("Your current location: GPS");
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(user, 15));
     }
+
 
     private void startLocationUpdates() {
         LocationRequest request =
@@ -190,50 +184,61 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void listenForIncidentUpdates() {
         if (db == null) return;
 
-        // We use a SnapshotListener so the map updates automatically
-        // when anyone in the world adds a new incident to Firebase.
-        incidentListener = db.collection("incidents")
-                .addSnapshotListener((snapshots, e) -> {
-                    if (e != null) {
-                        Log.e("FirebaseError", "Listen failed.", e);
-                        return;
-                    }
+        // Listen untuk INCIDENTS (Marker Merah)
+        db.collection("incidents").addSnapshotListener((snapshots, e) -> {
+            if (e != null || snapshots == null) return;
 
-                    if (snapshots != null && mMap != null) {
-                        // STEP A: Clear the map first so we don't have duplicate markers
-                        mMap.clear();
+            // Nota: Jika anda guna mMap.clear(), semua marker hilang.
+            // Jadi kita lukis semula semua marker dari kedua-dua collection.
+            drawAllMarkers();
+        });
 
-                        // STEP B: Always redraw the user's marker if we have their location
-                        if (userMarker != null) {
-                            userMarker = mMap.addMarker(new MarkerOptions()
-                                    .position(userMarker.getPosition())
-                                    .title("You are here"));
-                        }
-
-                        // STEP C: Loop through every document in your Firebase "incidents" collection
-                        for (QueryDocumentSnapshot doc : snapshots) {
-
-                            // Get the GeoPoint object we stored earlier
-                            GeoPoint gp = doc.getGeoPoint("location");
-                            String title = doc.getString("type"); // e.g., "Accident" or "Theft"
-                            String desc = doc.getString("description");
-
-                            if (gp != null) {
-                                // Convert Firebase GeoPoint to Google Maps LatLng
-                                LatLng pos = new LatLng(gp.getLatitude(), gp.getLongitude());
-
-                                // Add the marker to the map
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(pos)
-                                        .title(title)
-                                        .snippet(desc)
-                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                                );
-                            }
-                        }
-                    }
-                });
+        // Listen untuk LOCATIONS (Marker Biru)
+        db.collection("locations").addSnapshotListener((snapshots, e) -> {
+            if (e != null || snapshots == null) return;
+            drawAllMarkers();
+        });
     }
+
+    private void drawAllMarkers() {
+        if (mMap == null) return;
+        mMap.clear(); // Bersihkan peta
+
+        // Redraw User Marker
+        if (userMarker != null) {
+            mMap.addMarker(new MarkerOptions().position(userMarker.getPosition()).title("Anda di sini").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        }
+
+        // Ambil Incidents (MERAH)
+        db.collection("incidents").get().addOnSuccessListener(snapshots -> {
+            for (DocumentSnapshot doc : snapshots) {
+                GeoPoint gp = doc.getGeoPoint("location");
+                if (gp != null) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(gp.getLatitude(), gp.getLongitude()))
+                            .title(doc.getString("type"))
+                            .snippet(doc.getString("description"))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                }
+            }
+        });
+
+        // Ambil Static Locations - Klinik/PTAR (BIRU)
+        db.collection("locations").get().addOnSuccessListener(snapshots -> {
+            for (DocumentSnapshot doc : snapshots) {
+                Double lat = doc.getDouble("latitude");
+                Double lng = doc.getDouble("longitude");
+                if (lat != null && lng != null) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(lat, lng))
+                            .title(doc.getString("name"))
+                            .snippet(doc.getString("type"))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                }
+            }
+        });
+    }
+
 
     // =====================================================
     // LIFECYCLE
