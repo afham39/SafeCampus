@@ -29,7 +29,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/mapCard"
             android:layout_width="0dp"
-            android:layout_height="260dp"
+            android:layout_height="360dp"
             android:layout_margin="16dp"
             app:cardCornerRadius="16dp"
             app:layout_constraintTop_toBottomOf="@id/topAppBar"
@@ -43,15 +43,20 @@
                 android:layout_height="match_parent" />
         </androidx.cardview.widget.CardView>
 
+        <!-- BOTTOM BUTTONS (CHAIN) -->
+
         <TextView
             android:id="@+id/tvLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="Location: Not available"
-            app:layout_constraintTop_toBottomOf="@id/mapCard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.531"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/mapCard"
+            app:layout_constraintVertical_bias="0.025" />
 
         <Button
             android:id="@+id/btnOpenMap"
@@ -59,9 +64,11 @@
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:text="Open Full Map"
-            app:layout_constraintTop_toBottomOf="@id/tvLocation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/tvLocation"
+            app:layout_constraintVertical_bias="0.161" />
 
         <Button
             android:id="@+id/btnRefresh"
@@ -69,11 +76,12 @@
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:text="Refresh Location"
-            app:layout_constraintTop_toBottomOf="@id/btnOpenMap"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/btnOpenMap"
+            app:layout_constraintVertical_bias="0.0" />
 
-        <!-- BOTTOM BUTTONS (CHAIN) -->
         <Button
             android:id="@+id/btnReport"
             android:layout_width="0dp"
@@ -81,9 +89,11 @@
             android:layout_margin="16dp"
             android:text="Report Incident"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnIncidentList"
-            app:layout_constraintHorizontal_weight="1" />
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnRefresh"
+            app:layout_constraintVertical_bias="1.0" />
 
         <Button
             android:id="@+id/btnIncidentList"
@@ -92,9 +102,11 @@
             android:layout_margin="16dp"
             android:text="Incident List"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnReport"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1" />
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/btnReport"
+            app:layout_constraintTop_toBottomOf="@+id/btnRefresh"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

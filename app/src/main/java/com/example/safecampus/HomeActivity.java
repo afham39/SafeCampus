@@ -79,6 +79,13 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (username == null || username.isEmpty()) {
             username = "User";
         }
+
+
+        getSharedPreferences("user_prefs", MODE_PRIVATE)
+                .edit()
+                .putString("username", username)
+                .apply();
+
         tvNavUsername.setText("Hi, " + username);
 
         toolbar.setNavigationOnClickListener(v ->
@@ -90,6 +97,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             if (id == R.id.nav_report) {
                 startActivity(new Intent(this, ReportIncidentActivity.class));
+            }
+            else if (id == R.id.nav_home) {
+                startActivity(new Intent(this, HomeActivity.class));
             }
             else if (id == R.id.nav_list) {
                 startActivity(new Intent(this, ReportListActivity.class));

@@ -1,10 +1,12 @@
 package com.example.safecampus;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -37,6 +39,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.view.GravityCompat;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.appbar.MaterialToolbar;
+import android.view.View;
+
+
 
 
 import java.util.HashMap;
@@ -53,12 +62,60 @@ public class ReportIncidentActivity extends AppCompatActivity implements OnMapRe
 
     GoogleMap mMap;
     TextView tvLocation, tvTime;
+    ProgressBar progressSubmit;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_incident);
+
+        DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
+        NavigationView navigationView = findViewById(R.id.navigationView);
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+
+        progressSubmit = findViewById(R.id.progressSubmit);
+
+
+// Header username
+        View headerView = navigationView.getHeaderView(0);
+        TextView tvNavUsername = headerView.findViewById(R.id.tvNavUsername);
+
+// Load saved username (important fix)
+        String username = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                .getString("username", "User");
+
+        tvNavUsername.setText("Hi, " + username);
+
+// Open drawer
+        toolbar.setNavigationOnClickListener(v ->
+                drawerLayout.openDrawer(GravityCompat.START)
+        );
+
+// Navigation actions
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
+            } else if (id == R.id.nav_report) {
+                drawerLayout.closeDrawers(); // already here
+            } else if (id == R.id.nav_list) {
+                startActivity(new Intent(this, ReportListActivity.class));
+            } else if (id == R.id.nav_about) {
+                startActivity(new Intent(this, AboutActivity.class));
+            } else if (id == R.id.nav_logout) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+
+            drawerLayout.closeDrawers();
+            return true;
+        });
+
 
         spinnerType = findViewById(R.id.spinnerType);
         etDescription = findViewById(R.id.etDescription);
@@ -94,6 +151,8 @@ public class ReportIncidentActivity extends AppCompatActivity implements OnMapRe
 
 
         btnSubmit.setOnClickListener(v -> submitIncident());
+
+
     }
 
     @Override
@@ -163,6 +222,11 @@ public class ReportIncidentActivity extends AppCompatActivity implements OnMapRe
 
         String userEmail = user.getEmail();
 
+        btnSubmit.setEnabled(false);
+        progressSubmit.setVisibility(View.VISIBLE);
+
+
+
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
 
@@ -195,12 +259,17 @@ public class ReportIncidentActivity extends AppCompatActivity implements OnMapRe
                     db.collection("incidents")
                             .add(incident)
                             .addOnSuccessListener(doc -> {
+                                progressSubmit.setVisibility(View.GONE);
+                                btnSubmit.setEnabled(true);
                                 Toast.makeText(this, "Incident reported", Toast.LENGTH_SHORT).show();
                                 finish();
                             })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Failed to report incident", Toast.LENGTH_SHORT).show()
-                            );
+                            .addOnFailureListener(e -> {
+                                progressSubmit.setVisibility(View.GONE);
+                                btnSubmit.setEnabled(true);
+                                Toast.makeText(this, "Failed to report incident", Toast.LENGTH_SHORT).show();
+                            });
+
                 });
     }
 
