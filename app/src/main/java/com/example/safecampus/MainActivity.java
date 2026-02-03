@@ -10,6 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -22,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-
     private static final int RC_SIGN_IN = 100;
 
     @Override
@@ -30,22 +30,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ✅ Initialize Firebase
+        // ✅ Firebase init
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
 
-        // ✅ Google Sign-In configuration
+        // ✅ Google Sign-In config
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
-                GoogleSignInOptions.DEFAULT_SIGN_IN
-        )
+                GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // ✅ Google Login Button
-        findViewById(R.id.btnGoogleLogin).setOnClickListener(v -> {
+        // ✅ Google login button ONLY
+        SignInButton btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
+        btnGoogleLogin.setOnClickListener(v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
@@ -65,11 +65,9 @@ public class MainActivity extends AppCompatActivity {
                     firebaseAuthWithGoogle(account.getIdToken());
                 }
             } catch (ApiException e) {
-                Toast.makeText(
-                        this,
+                Toast.makeText(this,
                         "Google sign-in failed",
-                        Toast.LENGTH_SHORT
-                ).show();
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -83,26 +81,20 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
 
                         FirebaseUser user = mAuth.getCurrentUser();
-                        if (user == null) return;
+                        String name = (user != null && user.getDisplayName() != null)
+                                ? user.getDisplayName()
+                                : "User";
 
-                        String name = user.getDisplayName();
-                        String email = user.getEmail();
-
-                        Intent intent = new Intent(
-                                MainActivity.this,
-                                HomeActivity.class
-                        );
-                        intent.putExtra("name", name);
-                        intent.putExtra("email", email);
+                        Intent intent =
+                                new Intent(this, HomeActivity.class);
+                        intent.putExtra("username", name);
                         startActivity(intent);
                         finish();
 
                     } else {
-                        Toast.makeText(
-                                this,
+                        Toast.makeText(this,
                                 "Firebase authentication failed",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }

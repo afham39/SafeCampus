@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.util.Log;
@@ -21,10 +22,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import android.location.Geocoder;
+import android.location.Address;
+import android.widget.Toast;
+
+import java.util.List;
+import java.util.Locale;
+
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
+
+
 
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -43,6 +58,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FirebaseFirestore db;
     private ListenerRegistration incidentListener;
 
+
     private static final int LOCATION_REQ = 100;
 
     @Override
@@ -50,16 +66,58 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
+        NavigationView navigationView = findViewById(R.id.navigationView);
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+
+        // Get header view
+        View headerView = navigationView.getHeaderView(0);
+        TextView tvNavUsername = headerView.findViewById(R.id.tvNavUsername);
+
+        // Set username
+        String username = getIntent().getStringExtra("username");
+        if (username == null || username.isEmpty()) {
+            username = "User";
+        }
+        tvNavUsername.setText("Hi, " + username);
+
+        toolbar.setNavigationOnClickListener(v ->
+                drawerLayout.openDrawer(GravityCompat.START)
+        );
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_report) {
+                startActivity(new Intent(this, ReportIncidentActivity.class));
+            }
+            else if (id == R.id.nav_list) {
+                startActivity(new Intent(this, ReportListActivity.class));
+            }
+            else if (id == R.id.nav_about) {
+                startActivity(new Intent(this, AboutActivity.class));
+            }
+            else if (id == R.id.nav_logout) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+
+            drawerLayout.closeDrawers();
+            return true;
+        });
+
+
         // ---------- UI ----------
-        tvWelcome = findViewById(R.id.tvWelcome);
+
         tvLocation = findViewById(R.id.tvLocation);
         btnOpenMap = findViewById(R.id.btnOpenMap);
         btnReport = findViewById(R.id.btnReport);
         btnRefresh = findViewById(R.id.btnRefresh);
         btnIncidentList = findViewById(R.id.btnIncidentList);
 
-        String username = getIntent().getStringExtra("username");
-        tvWelcome.setText("Hello, " + username);
+
+
 
         // ---------- Firebase ----------
         db = FirebaseFirestore.getInstance();
@@ -76,6 +134,9 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         };
+
+
+
 
         // ---------- Map ----------
         SupportMapFragment mapFragment =
@@ -154,15 +215,66 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void updateUserLocation(Location location) {
         LatLng user = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (userMarker == null) {userMarker = mMap.addMarker(new MarkerOptions()
-                .position(user)
-                .title("Anda di sini")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        // Update marker
+        if (userMarker == null) {
+            userMarker = mMap.addMarker(
+                    new MarkerOptions()
+                            .position(user)
+                            .title("You are here")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            );
         } else {
             userMarker.setPosition(user);
         }
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(user, 15));
+
+        // ===== UPDATE LOCATION TEXT =====
+        setLocationText(location);
     }
+
+
+    private void setLocationText(Location location) {
+        try {
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    1
+            );
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String area = address.getSubLocality();
+                String city = address.getLocality();
+                String country = address.getCountryName();
+
+                StringBuilder locationText = new StringBuilder("Location: ");
+
+                if (area != null) locationText.append(area).append(", ");
+                if (city != null) locationText.append(city).append(", ");
+                if (country != null) locationText.append(country);
+
+                tvLocation.setText(locationText.toString());
+            } else {
+                // fallback
+                tvLocation.setText(
+                        "Location: " +
+                                location.getLatitude() + ", " +
+                                location.getLongitude()
+                );
+            }
+
+        } catch (Exception e) {
+            tvLocation.setText(
+                    "Location: " +
+                            location.getLatitude() + ", " +
+                            location.getLongitude()
+            );
+        }
+    }
+
+
 
 
     private void startLocationUpdates() {
