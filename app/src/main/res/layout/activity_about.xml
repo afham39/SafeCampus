@@ -49,6 +49,9 @@
                 <!-- ===== PROFILE CARD 4 ===== -->
                 <include layout="@layout/item_profile_card_nureen" />
 
+                <!-- ===== PROFILE CARD 4 ===== -->
+                <include layout="@layout/item_profile_card_project" />
+
             </LinearLayout>
         </ScrollView>
 

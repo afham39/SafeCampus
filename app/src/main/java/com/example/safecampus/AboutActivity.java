@@ -21,10 +21,6 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
 
 
-
-
-
-
         DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
