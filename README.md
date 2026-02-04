@@ -65,3 +65,49 @@ The project consists of two main components:
 
 ## 🗂️ The website for admin panel safe campus : https://safecampus-f2428.web.app/
 
+
+---
+
+## 📖 About Page
+
+The application includes an **About Page** that displays: 
+- Developer names and student details  
+- Program github link and website link  
+- Copyright statement  
+- Clickable URL linking to this GitHub repository  
+
+---
+
+## 👨‍💻 Developers
+
+**Group Name:** Kelate4Lyfe 
+**Course:** ICT602 – Mobile Technology  
+**Institution:** Universiti Teknologi MARA (UiTM)  
+
+|              Name                   | Student ID | Program |
+|-------------------------------------|------------|--------|
+| AFHAM BIN ALIAS                     | 2023472522 | 266 5B |
+| AMEERUL HAQEEM BIN AZLEE            | 2023898132 | 266 5C |
+| NUR NATASHA SYAFIAH BINTI RAHMAT    | 2023680226 | 266 5B |
+| NUREEN SYAKIRAH BINTI MOHAMED JAMIL | 2023899666 | 266 5B |
+
+---
+
+## 🎥 Demonstration Video
+
+A project demonstration video is provided showcasing:
+- User login
+- Map and GPS functionality
+- Incident reporting
+- Admin web interface
+- About page
+
+📺 **Video Link:** [Insert video URL here]
+
+---
+
+## 📄 License
+
+This project is developed for academic purposes only as part of an undergraduate course requirement.
+
+
