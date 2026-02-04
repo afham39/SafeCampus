@@ -29,12 +29,12 @@ The project consists of two main components:
   - GPS coordinates
 - Viewing markers such as:
   - Reported incidents
-  - Safety locations / shelters / clinics (depending on project scope)
+  - Safety locations / general student location / clinics.
 - About page with developer details and project link  
 
 ### 2. Web Application (Admin Panel)
 - Administrator login  
-- Manage location data (e.g. security posts, shelters, clinics)  
+- Manage location data (e.g. security posts, clinics, general student location)  
 - View user-submitted reports including:
   - Username
   - Incident description
@@ -49,16 +49,17 @@ The project consists of two main components:
 
 ### Mobile Application
 - Android Studio  
-- Java / Kotlin  
+- Java 
 - Google Maps API  
-- GPS & Location Services  
-- RESTful API integration  
+- GPS & Location Services 
+- Firestore Database
 
 ### Web Application
-- HTML, CSS, JavaScript  
-- PHP / Node.js (update based on your actual stack)  
-- MySQL / Database server  
-- REST API  
+- HTML, CSS, JavaScript
+- Visual Studio Code
+- Firebase Authentication
+- Firebase Storage
+- REST API
 
 ---
 
