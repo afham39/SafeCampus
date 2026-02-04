@@ -18,17 +18,18 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/purple_700"
+            android:background="#9A68A2"
             android:title="Our Team"
             android:titleTextColor="@color/white"
-            app:titleCentered="true"
-            app:navigationIcon="@drawable/ic_baseline_menu_24" />
+            app:navigationIcon="@drawable/ic_baseline_menu_24"
+            app:titleCentered="true" />
 
 
         <!-- SCROLLABLE CONTENT -->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/yellow_200">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,19 +38,25 @@
                 android:padding="16dp">
 
                 <!-- ===== PROFILE CARD 1 ===== -->
-                <include layout="@layout/item_profile_card_am"/>
+                <include layout="@layout/item_profile_card_am" />
 
                 <!-- ===== PROFILE CARD 2 ===== -->
-                <include layout="@layout/item_profile_card_meego"/>
+                <include layout="@layout/item_profile_card_meego" />
 
                 <!-- ===== PROFILE CARD 3 ===== -->
-                <include layout="@layout/item_profile_card_tasha"/>
+                <include layout="@layout/item_profile_card_tasha" />
 
                 <!-- ===== PROFILE CARD 4 ===== -->
-                <include layout="@layout/item_profile_card_nureen"/>
+                <include layout="@layout/item_profile_card_nureen" />
 
             </LinearLayout>
         </ScrollView>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
     </LinearLayout>
 
     <!-- DRAWER -->

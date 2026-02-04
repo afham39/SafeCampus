@@ -10,20 +10,20 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/yellow_200">
 
         <!-- TOP APP BAR -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:background="@color/purple_700"
+            android:background="#9A68A2"
             android:title="SafeCampus"
             android:titleTextColor="@color/white"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_baseline_menu_24" />
 
         <!-- MAP CARD -->
         <androidx.cardview.widget.CardView
@@ -32,9 +32,9 @@
             android:layout_height="360dp"
             android:layout_margin="16dp"
             app:cardCornerRadius="16dp"
-            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/topAppBar">
 
             <fragment
                 android:id="@+id/homeMap"
@@ -51,6 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="Location: Not available"
+            android:textColor="@color/black"
+            android:textStyle="italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.531"
@@ -63,7 +65,11 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
+            android:backgroundTint="@color/white"
             android:text="Open Full Map"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +81,10 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
+            android:backgroundTint="@color/white"
             android:text="Refresh Location"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -87,6 +96,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
+            android:backgroundTint="#F81202"
             android:text="Report Incident"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnIncidentList"
@@ -100,6 +110,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_margin="16dp"
+            android:backgroundTint="#209E25"
             android:text="Incident List"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

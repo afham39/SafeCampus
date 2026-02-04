@@ -8,35 +8,39 @@
     android:layout_height="match_parent">
 
     <!-- ================= MAIN CONTENT ================= -->
+
+    <!-- ================= NAV DRAWER ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/purple_200">
+        android:background="@color/yellow_200">
 
         <!-- TOP APP BAR -->
+
+        <!-- TITLE -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:background="@color/purple_700"
+            android:background="#9A68A2"
             android:title="SafeCampus"
             android:titleTextColor="@color/white"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_baseline_menu_24" />
 
-        <!-- TITLE -->
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:text="Report An Incident!"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_margin="16dp"
-            app:layout_constraintTop_toBottomOf="@id/topAppBar"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar" />
 
         <!-- MAP CARD (ROUNDED like Home) -->
         <androidx.cardview.widget.CardView
@@ -60,31 +64,34 @@
         <!-- INCIDENT TYPE -->
         <Spinner
             android:id="@+id/spinnerType"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="263dp"
+            android:layout_height="32dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/mapCard"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/mapCard" />
 
         <EditText
             android:id="@+id/etDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_width="343dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="8dp"
             android:hint="Incident description"
-            app:layout_constraintTop_toBottomOf="@id/spinnerType"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/spinnerType" />
 
         <TextView
             android:id="@+id/tvLocation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_width="316dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="32dp"
             android:text="Location: Detecting..."
+            android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.494"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etDescription" />
 
@@ -92,39 +99,41 @@
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="16dp"
             android:text="Time:"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.103"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvLocation"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintVertical_bias="0.044" />
 
         <Button
             android:id="@+id/btnSubmit"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:backgroundTint="@color/yellow_500"
+            android:layout_width="291dp"
+            android:layout_height="52dp"
+            android:backgroundTint="#9A68A2"
             android:text="Submit Incident"
-            android:textColor="#020202"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.91" />
+            app:layout_constraintVertical_bias="0.905" />
 
         <ProgressBar
             android:id="@+id/progressSubmit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/btnSubmit"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
+            app:layout_constraintTop_toBottomOf="@id/btnSubmit" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ================= NAV DRAWER ================= -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"

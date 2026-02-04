@@ -23,6 +23,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:foregroundTint="@color/white"
             android:gravity="center_horizontal"
             android:orientation="vertical"
