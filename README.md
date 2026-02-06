@@ -64,6 +64,7 @@ The project consists of two main components:
 ---
 
 ## 🗂️ The website for admin panel safe campus : https://safecampus-f2428.web.app/
+## 🗂️ THe demo acount for adnin is : admin@gmail.com  ( Admin12345 )
 
 
 ---
@@ -102,7 +103,8 @@ A project demonstration video is provided showcasing:
 - Admin web interface
 - About page
 
-📺 **Video Link:** [Insert video URL here]
+📺 **Video Link:** https://www.youtube.com/watch?v=zpLZBmk_LUo
+
 
 ---
 
